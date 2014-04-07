@@ -1,0 +1,53 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset2 Symbol;}}
+{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\sa200\sl276\slmult1\lang9\ul\b\f0\fs32 DOCUMENTATION CHANGES\par
+\fs22 See Demo For Examples\par
+\ulnone Basic Changes\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1 Sprite.speed \b0 is now set to 0\par
+\b{\pntext\f1\'B7\tab}Sprite.boundAction \b0 is now set to STOP\par
+\pard\sa200\sl276\slmult1\b Canvas Changes\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\b0 For click handling on the \b Canvas \b0 declare a \b clicked()\b0  function that does not belong to an object\par
+{\pntext\f1\'B7\tab}The game engine searches for a \b clicked()\b0  function and calls it when the \b Canvas\b0  is clicked and no \b Sprite\b0  is underneath the mouse\line\par
+\pard\sa200\sl276\slmult1\b Z-Value\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\b0 A Z-Value sets the layer a given sprite is on. Sprites with a higher value are rendered above Sprites with lower values.\line\par
+\pard\sa200\sl276\slmult1\b Sprite\b0\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1  Now called by \b Sprite(scene, imageFile, width, height, z)\par
+\b0{\pntext\f1\'B7\tab}Z value is given when an object is declared\par
+{\pntext\f1\'B7\tab}Z value can be changed manually by changing the \b Sprite.z\b0  variable\par
+\b{\pntext\f1\'B7\tab}Sprite.clickable\b0  determines if an object can be clicked by the user\par
+\b{\pntext\f1\'B7\tab}Sprite.clickable\b0  is a boolean set to \b TRUE \b0 and can be manually changed to \b FALSE \b0 for objects the user cannot click\par
+{\pntext\f1\'B7\tab}For click handling declare a \b clicked()\b0  method on the instantiated \b Sprite \b0 object\par
+{\pntext\f1\'B7\tab}The \b clicked()\b0  method is called whenever a user clicks that individual \b Sprite\b0\par
+\b{\pntext\f1\'B7\tab}Sprite.angleToMouse() \b0 can be called which returns the angle in degrees between the mouse and the \b Sprite\b0\par
+\b{\pntext\f1\'B7\tab}Sprite.collidesWithMouse \b0 can be called which returns a boolean dependant upon if the \b Mouse \b0 is over the \b Sprite\b0\line\par
+\pard\sa200\sl276\slmult1\b spriteList\b0\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\b spriteList \b0 is a object that contains a array that holds all \b Sprites \b0 that are created and is created in the scene automatically\par
+{\pntext\f1\'B7\tab}A \b Sprite \b0 is added into the \b spriteList \b0 array upon creation and is sorted based upon the \b Sprite.z\b0  value\par
+\b{\pntext\f1\'B7\tab}spriteList.list\b0  can be used to access the \b Sprite \b0 array directly. (But is advised against)\par
+\b{\pntext\f1\'B7\tab}spriteList.update()\b0  calls the \b Sprite.update() \b0 method of each \b Sprite \b0 which are called in the order of their z value\par
+\b{\pntext\f1\'B7\tab}spriteList.length() \b0 returns the length of the \b spriteList.list \b0 array\par
+\pard\li360\sa200\sl276\slmult1\par
+\pard\sa200\sl276\slmult1\b Sound\b0\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\b Sound \b0 object now works for iOS6 and above along with desktop browsers\par
+{\pntext\f1\'B7\tab}Can be declared within an object\par
+{\pntext\f1\'B7\tab}Created by \b varibleName = new Sound("PATH_TO_SOUND");\b0\par
+{\pntext\f1\'B7\tab}Play the sound by \b variableName.playSound()\b0\par
+{\pntext\f1\'B7\tab}Stop the sound by \b variableName.stopSound();\b0\par
+{\pntext\f1\'B7\tab}Options can be passed when you call the \b playSound()\b0  function for webkit browsers\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li1080\sa200\sl276\slmult1 The two current options are \b loop \b0 which can be set to \b true \b0 and \b sound \b0 which can be set from \b 0\b0  to \b 1\b0  to change the volume of the sound\par
+{\pntext\f1\'B7\tab}EX: \b variableName.playSound(\{loop: true, sound: 0.5\});\b0\line\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\par
+\pard\sa200\sl276\slmult1\b textBox\b0\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\b textBox \b0 is a extended \b Sprite Class Object \b0 so it has access to all of sprites variables and methods\par
+{\pntext\f1\'B7\tab}Called by \b Textbox(scene, image, width, height)\b0\par
+\b{\pntext\f1\'B7\tab}textBox \b0 can be passed \b null\b0  as it's image. This sets the background to a default white with black border.\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li1080\sa200\sl276\slmult1\b Background Image\b0  can be set with \b textBox.setImage(image, style)\b0\par
+\b{\pntext\f1\'B7\tab}Background Color \b0 can be set with \b textBox.setBackground(color, alpha)\b0\par
+\b{\pntext\f1\'B7\tab}Font \b0 can be set with \b textBox.setFont(font, size, color)\b0\par
+\b{\pntext\f1\'B7\tab}Border \b0 can be set with \b textBox.setBorder(size, color, alpha)\b0\par
+\b{\pntext\f1\'B7\tab}Margin \b0 can be set with \b textBox.setMargin(top, bot, right, left)\b0\par
+\b{\pntext\f1\'B7\tab}Size \b0 of the \b textBox \b0 can be set manually with\b  textBox.resize(width, height)\par
+{\pntext\f1\'B7\tab}Size \b0 of the \b textBox \b0 can be automatically set with \b textBox.fitText(). \b0 Should be called after the text or size of text is altered.\par
+\b{\pntext\f1\'B7\tab}Alignment \b0 can be set with \b textBox.setAlign(align)\par
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1 textBox.text\b0  can be set with the \b String \b0 you want the \b textBox \b0 to display\par
+{\pntext\f1\'B7\tab}If \b textBox.text \b0 is not empty it will write the string inside the \b textBox\b0\par
+\pard\li360\sa200\sl276\slmult1\par
+}
