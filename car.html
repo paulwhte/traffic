@@ -25,11 +25,12 @@
         car.desiredSpeed = desiredSpeed;
         car.accel = .5;
         car.decel = -.75;
+        car.spawned = false;
         
         car.carID = carID;
         car.Lane = startLane;
         car.followDist = (followDist*FOLLOW_MULT) + 38; // car lengths times length of car plus half of car length
-        car.setSpeed(speed);
+        car.setSpeed(0);
         car.setPosition(10,startLane);
         
         //return current lane of caar
@@ -60,9 +61,89 @@
             }
         } //end decel
         
+        //*************************************
+        //This implements waitTime before setting a car to be visible, and
+        //  use tooClose to track the car in front
+        //*************************************
+        car.spawnAndTrack = function()
+        {
+            //wait until car is supposed to spawn
+            if(timer.getElapsedTime() > car.waitTime)
+            {
+                //first time spawning of car
+                if(car.spawned == false)
+                {
+                    car.visible = true;
+                    car.setSpeed(car.desiredSpeed);
+                    car.spawned = true;
+                }
+                
+                //console.log(car.carID + " speed: " + car.speed);
+                
+                //calculate what car is first in front of this car
+                carInFront = findCarInFront(car);
+                
+                if(carInFront != null)
+                {
+                    //check if carInFront is too close
+                    if(car.tooClose(carInFront))
+                    {
+                        //console.log("too close");
+                        //too close, slows car down
+                        if(car.speed > 0)
+                        {
+                            car.changeSpeedBy(-.1);
+                        }
+                        
+                        //makes sure car doesn't go backward
+                        if(car.speed < 0)
+                        {
+                            car.setSpeed(0);
+                        }
+                        
+                        
+                    } else if(car.speed < car.desiredSpeed)
+                    {
+                        //speeds up if desired speed isn't reached
+                        car.changeSpeedBy(.1);
+                    }
+                }
+            } //end tracking
+        } //end spawnAndTrack
+        
+        
         //*****************************************************
-        //  Important function: determines if this car is too 	
-        //      to cars in front 
+        //  Find and return the car directly in front of the 
+        //      car given as parameter
+        //*****************************************************
+        
+        car.findCarInFront = function(dude)
+        {
+            //default value
+            carInFront = null;
+            
+            //iterate through sprite list
+            for(var i = 0; i < spriteList.length(); i++)
+            {
+                //pull the sprite from sprite list
+                check = spriteList.returnSprite(i);
+                
+                //if they are in the same lane
+                if(check.y == dude.Lane)
+                {
+                    //if the other car is in front
+                    if(check.x > dude.x)
+                    {
+                        carInFront = check;
+                    }
+                }
+            }
+            return carInFront;
+        }
+        
+        //*****************************************************
+        //  Determines if this car is too to car in front
+        //       
         //*****************************************************
     
         car.tooClose = function(sprite){
@@ -109,17 +190,21 @@
     function init()
     {
         game = new Scene();
-        game.setSize(800,300);
+        game.setSize(1300,300);
         timer = new Timer();
         
         road = new Road();
         
         //carID, startLane, desiredLane, speed, desiredSpeed, followDist, waitTime
-        fastCar = new Car(1, LANE_TWO, LANE_TWO, 0, 5, 1, 10);
+        fastCar = new Car(1, LANE_TWO, LANE_TWO, 0, 5, 1, 8);
         fastCar.setBoundAction(DIE);
         fastCar.visible = false;
         
-        slowCar = new Car(2, LANE_TWO, LANE_TWO, 2, 2, 1, 0);
+        lastCar = new Car(1, LANE_TWO, LANE_TWO, 0, 6, 1, 12);
+        lastCar.setBoundAction(DIE);
+        lastCar.visible = false;
+        
+        slowCar = new Car(2, LANE_TWO, LANE_TWO, 2.5, 4, 1, 0);
         slowCar.setBoundAction(DIE);
         
         otherCar = new Car(2, LANE_THREE, LANE_THREE, 3, 3, 1, 0);
@@ -132,17 +217,22 @@
     {
         game.clear();
         
-        if(timer.getElapsedTime() > 10 && timer.getElapsedTime() < 10.1)
+        if(timer.getElapsedTime() > 8 && timer.getElapsedTime() < 8.1)
         {
             fastCar.visible = true;
-            fastCar.setSpeed(5);
-            console.log("fast car start");
+            fastCar.setSpeed(fastCar.desiredSpeed);
+        }
+        
+        if(timer.getElapsedTime() > 11 && timer.getElapsedTime() < 11.1)
+        {
+            lastCar.visible = true;
+            lastCar.setSpeed(fastCar.desiredSpeed);
         }
         
         //start tracking fastCar after 10 ticks
-        if(timer.getElapsedTime() > 10)
+        if(timer.getElapsedTime() > 8)
         {
-            console.log("Car speed: " + fastCar.speed);
+            //console.log("Car speed: " + fastCar.speed);
             
             //check if fastCar is too close
             if(fastCar.tooClose(slowCar))
@@ -164,10 +254,38 @@
             } else if(fastCar.speed < fastCar.maxSpeed)
             {
                 //speeds up if max speed isn't reached
-                console.log("can speed up");
                 fastCar.changeSpeedBy(.1);
             }
         } //end tracking of fastCar
+        
+        if(timer.getElapsedTime() > 11)
+        {
+            //console.log("Car speed: " + fastCar.speed);
+            
+            //check if lastCar is too close
+            if(lastCar.tooClose(fastCar))
+            {
+                //console.log("too close");
+                //too close, slows car down
+                if(lastCar.speed > 0)
+                {
+                    lastCar.changeSpeedBy(-.1);
+                }
+                
+                //makes sure car doesn't go backward
+                if(lastCar.speed < 0)
+                {
+                    lastCar.setSpeed(0);
+                }
+                
+                
+            } else if(lastCar.speed < lastCar.maxSpeed)
+            {
+                //speeds up if max speed isn't reached
+                //console.log("can speed up");
+                lastCar.changeSpeedBy(.1);
+            }
+        } //end tracking of lastCar
         
         //console.log("Time: " + timer.getElapsedTime());
         spriteList.update();

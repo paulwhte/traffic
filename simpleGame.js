@@ -715,7 +715,7 @@ function SpriteList() {
                     this.list.splice(i, 0, sprite); 
                     break; 
                 } 
-                if (i = (this.list.length)) { 
+                if (i == (this.list.length)) { 
                     this.list.splice(i, 0, sprite);
                     break;
                 } 
@@ -730,7 +730,12 @@ function SpriteList() {
         for (i = 0; i < this.list.length; i++) { 
             this.list[i].update(); 
         } 
-    } 
+    }
+    
+    this.returnSprite = function(index)
+    {
+	return this.list[index];
+    }
 
     this.findSprite = function (event, x, y) { 
 		var found = false;
