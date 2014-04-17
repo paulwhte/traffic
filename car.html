@@ -5,6 +5,7 @@
     <title>Traffic 1</title>
     <script type="text/javascript"
             src = "simpleGame.js"></script>
+	<script type="text/javascript" src = "controller.js"></script>
     
     <script type="text/javascript">
         var game;
@@ -15,21 +16,21 @@
         var LANE_FOUR = 262.5;
         var FOLLOW_MULT = 80; //follow distance is given in car lengths, must multiply by factor
     
-    function Car(carID, startLane, desiredLane, speed, desiredSpeed, followDist, waitTime)
+    function Car(carID,desiredSpeed, startLane, destLane, accel, decel, maxSpeed, followDist)
     { 
         car = new Sprite(scene, "car.jpg", 75,40);
         car.setAngle(90);
         car.setImgAngle(0);
-        car.maxSpeed = 5;
+        car.maxSpeed = maxSpeed;
         car.minSpeed = 0;
         car.desiredSpeed = desiredSpeed;
-        car.accel = .5;
-        car.decel = -.75;
+        car.accel = accel;
+        car.decel = decel;
         
         car.carID = carID;
         car.Lane = startLane;
-        car.followDist = (followDist*FOLLOW_MULT) + 38; // car lengths times length of car plus half of car length
-        car.setSpeed(speed);
+		car.destLane = destLane;
+        car.followDist = ((followDist+1)*FOLLOW_MULT); // car lengths times length of car plus half of car length
         car.setPosition(10,startLane);
         
         //return current lane of caar
@@ -37,6 +38,11 @@
         {
             return car.Lane;
         }
+		
+		car.changeLaneBy = function(dLane)
+		{
+			car.Lane += dLane;
+		}
         
         //checking if the car can/should accelerate
         car.accel = function()
@@ -60,42 +66,14 @@
             }
         } //end decel
         
-        //*****************************************************
-        //  Important function: determines if this car is too 	
-        //      to cars in front 
-        //*****************************************************
-    
-        car.tooClose = function(sprite){
-            //check if the car is too close to the one in front
-            close = false;
-            
-            //both must be visible
-            if(this.visible)
+        //Emergency stop called by the controller
+        car.eStop = function()
+        {
+            if(this.speed > 0)
             {
-                //console.log("dis is visible");
-                
-                if(sprite.visible)
-                {
-                    //console.log("both visible");
-                    
-                    //the two have to be in the same lane
-                    if(sprite.Lane == this.Lane)
-                    {
-                        //console.log("in the same lane");
-                        //if this car is closer than 2* the follow dist
-                        //  AND this car's speed is still greater than the one in front
-                        if((this.followDist + 38) > (sprite.x-this.x) && this.speed > sprite.speed)
-                        {
-                            close = true;
-                            //this.decel();
-                            //console.log("too close");
-                        }
-                    }
-                }
+                car.changeSpeedBy(car.decel - .25);
             }
-            
-            return close;
-        } //end too close
+        }
         
         return car;
     }
@@ -108,69 +86,12 @@
     
     function init()
     {
-        game = new Scene();
-        game.setSize(800,300);
-        timer = new Timer();
         
-        road = new Road();
-        
-        //carID, startLane, desiredLane, speed, desiredSpeed, followDist, waitTime
-        fastCar = new Car(1, LANE_TWO, LANE_TWO, 0, 5, 1, 10);
-        fastCar.setBoundAction(DIE);
-        fastCar.visible = false;
-        
-        slowCar = new Car(2, LANE_TWO, LANE_TWO, 2, 2, 1, 0);
-        slowCar.setBoundAction(DIE);
-        
-        otherCar = new Car(2, LANE_THREE, LANE_THREE, 3, 3, 1, 0);
-        otherCar.setBoundAction(DIE);
-        
-        game.start();
     }
     
     function update()
     {
-        game.clear();
         
-        if(timer.getElapsedTime() > 10 && timer.getElapsedTime() < 10.1)
-        {
-            fastCar.visible = true;
-            fastCar.setSpeed(5);
-            console.log("fast car start");
-        }
-        
-        //start tracking fastCar after 10 ticks
-        if(timer.getElapsedTime() > 10)
-        {
-            console.log("Car speed: " + fastCar.speed);
-            
-            //check if fastCar is too close
-            if(fastCar.tooClose(slowCar))
-            {
-                //console.log("too close");
-                //too close, slows car down
-                if(fastCar.speed > 0)
-                {
-                    fastCar.changeSpeedBy(-.1);
-                }
-                
-                //makes sure car doesn't go backward
-                if(fastCar.speed < 0)
-                {
-                    fastCar.setSpeed(0);
-                }
-                
-                
-            } else if(fastCar.speed < fastCar.maxSpeed)
-            {
-                //speeds up if max speed isn't reached
-                console.log("can speed up");
-                fastCar.changeSpeedBy(.1);
-            }
-        } //end tracking of fastCar
-        
-        //console.log("Time: " + timer.getElapsedTime());
-        spriteList.update();
     }
     </script>
 </head>
