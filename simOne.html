@@ -1,0 +1,43 @@
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Traffic Simulation 1</title>
+    <script type="text/javascript"
+            src = "simpleGame.js"></script>
+	<script type="text/javascript" src = "controller.js"></script>
+        <script type="text/javascript" src = "car.js"></script>
+    
+    <script type="text/javascript">
+        var control;
+        var spawn;
+
+        //LANE CONSTANTS
+        var LANE_ONE = 37.5;
+        var LANE_TWO = 112.5;
+        var LANE_THREE = 187.5;
+        var LANE_FOUR = 262.5;
+        
+        //SIMULATION CONSTANT
+        SIM = 1;
+        
+        function init()
+        {
+            //Initialize spawner with the appropriate simulation constant
+            spawn = new spawner(SIM);
+            
+            //Initialze controller
+            control = new controller();
+        }
+        
+        function update()
+        {
+            
+        }
+    </script>
+
+</head>
+
+<body onload="init()">
+    
+</body>
+</html>
