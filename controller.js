@@ -12,7 +12,7 @@ function Controller() {
 	for (var i = 0; i < this.cars.length; i ++) {
 		// First check if there's need for the car to activate an emergency stop.
 		var car = this.cars[i];
-		if (needToEmergencyStop(car.getLane()) {
+		if (needToEmergencyStop(car.getLane())) {
 			car.eStop();
 		} else {
 			// Second, check if a car needs to switch lanes.
