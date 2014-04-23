@@ -3,61 +3,92 @@
 ** should be travelling at as well as when they should switch lanes.
 */
 
-function Controller() {
+function Controller(training) {
 	this.cars = [];
+	this.mpgCounter = 0;
+	this.speedCounter = 0;
+	this.counter = 0;
+	this.totalMPG = 0;
+	this.totalSpeed = 0;
+	this.isTraining = training;
+	this.avgSpeed = 0;
+	this.pickSpeed();
 	
 	this.update = function() {
 	// Runs through the cars seeing if any need to change lanes or speeds and checks if they are able to do such things.
-	
-	for (var i = 0; i < this.cars.length; i ++) {
-		// First check if there's need for the car to activate an emergency stop.
-		var car = this.cars[i];
-		if (needToEmergencyStop(car.getLane())) {
-			car.eStop();
-		} else {
-			// Second, check if a car needs to switch lanes.
-			if (car.getLane() != car.destLane) {
+		this.mpgCounter = 0;
+		this.speedCounter = 0;
+		for (var i = 0; i < this.cars.length; i ++) {
+			// First check if there's need for the car to activate an emergency stop.
+			var car = this.cars[i];
 			
-				// Determine which direction the car needs to go to get to the destination lane.
-				var direction = car.getLane() - car.destLane;
-				if (direction > 0) {
-					// Determine if it is okay to change to the next lane.
-					var state = this.okayTochangeLane(car, car.getLane() + 1);
-					if (state == OKAY) car.changlaneBy(1);
-					// If the car can change lanes by going a little faster, speed up.
-					else if (state == SPEED_UP) car.accel();
-					
-				} else if (direction < 0) {
-					// Determine if it is okay to change to the next lane.
-					if (this.okayToChangeLane(car, car.getLane() - 1) == OKAY) car.changeLaneBy(-1);
-					// If the car can change lanes by going a little faster, speed up.
-					else if (state == SPEED_UP) car.accel();
-				} // end if
-			} // end if
+			this.mpgCounter += car.mpg();
+			this.speedCounter += car.getSpeed();
 			
-			// Next, check if a car is at its desired speed.
-			if (car.speed < car.desiredSpeed) {
-				// Speed the car up if possible.
-				if (this.okayToSpeedUp(car)) car.accel();
+			if (needToEmergencyStop(car.getLane())) {
+				car.eStop();
+			} else if(this.avgSpeed > 0) {
+				if (car.getSpeed() > this.avgSpeed) {
+					car.decel();	
+				} else if (car.getSpeed() < this.avgSpeed) {
+					car.accel();
+				}
+				/*
+				// Second, check if a car needs to switch lanes.
+				if (car.getLane() != car.destLane) {
 				
-			} else if (car.speed > car.desiredSpeed) {
-				// Slow the car down if possible.
-				if (this.okayToSlowDown(car)) car.deccel();
+					// Determine which direction the car needs to go to get to the destination lane.
+					var direction = car.getLane() - car.destLane;
+					if (direction > 0) {
+						// Determine if it is okay to change to the next lane.
+						var state = this.okayTochangeLane(car, car.getLane() + 1);
+						if (state == OKAY) car.changlaneBy(1);
+						// If the car can change lanes by going a little faster, speed up.
+						else if (state == SPEED_UP) car.accel();
+						
+					} else if (direction < 0) {
+						// Determine if it is okay to change to the next lane.
+						if (this.okayToChangeLane(car, car.getLane() - 1) == OKAY) car.changeLaneBy(-1);
+						// If the car can change lanes by going a little faster, speed up.
+						else if (state == SPEED_UP) car.accel();
+					} // end if
+				} // end if
+				
+				// Next, check if a car is at its desired speed.
+				if (car.speed < car.desiredSpeed) {
+					// Speed the car up if possible.
+					if (this.okayToSpeedUp(car)) car.accel();
+					
+				} else if (car.speed > car.desiredSpeed) {
+					// Slow the car down if possible.
+					if (this.okayToSlowDown(car)) car.deccel();
+				} // end if
+				
+				// Finally, check if a car can maintain its speed.
+				var state = this.okayToStay(car);
+				if (state != OKAY) {
+					// Try to change lanes to avoid changing speed.
+					if (this.okayToChangeLane(car, car.getLane() + 1) == OKAY) car.changeLaneBy(1);
+					else if (this.okayToChangeLane(car, car.getLane() - 1) == OKAY) car.changeLaneBy(-1);
+					else if (state == SPEED_UP) car.accel();
+					else if (state == SLOW_DOWN) car.decel();
+				} // end if*/
 			} // end if
-			
-			// Finally, check if a car can maintain its speed.
-			var state = this.okayToStay(car);
-			if (state != OKAY) {
-				// Try to change lanes to avoid changing speed.
-				if (this.okayToChangeLane(car, car.getLane() + 1) == OKAY) car.changeLaneBy(1);
-				else if (this.okayToChangeLane(car, car.getLane() - 1) == OKAY) car.changeLaneBy(-1);
-				else if (state == SPEED_UP) car.accel();
-				else if (state == SLOW_DOWN) car.decel();
-			} // end if
-		} // end if
-	} // end for
+		} // end for
+	this.counter++;
+	
+	this.totalMPG += this.mpgCounter/this.cars.length;
+	this.totalSpeed += this.speedCounter/this.cars.length;
 	
 	} // end update
+	
+	this.pickSpeed = function() {
+		
+	}
+	
+	this.stats = function(car) {
+		
+	}
 	
 	this.needToEmergencyStop = function(lane) {
 	// Checks to see if cars in the given lane need to execute an emergency stop.
@@ -65,11 +96,12 @@ function Controller() {
 		return false;
 	} // end eStop
 	
-	this.okayToChangeLane = function(car, lane) {
+	/*this.okayToChangeLane = function(car, lane) {
 	// Checks to see if it is safe for a car to switch to the given lane by checking how close the cars in that lane are.
 	// Returns one of four states: OKAY, SPEED_UP, SLOW_DOWN, or CANNOT_CHANGE.
 		return OKAY;
 	} // end okayToChangeLane
+	*/
 	
 	this.okayToSpeedUp = function(car) {
 	// Checks to see if it is safe for a car to speed up by checking how close the car in front is (if any).
