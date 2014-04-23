@@ -6,10 +6,17 @@
  *  -speed up, slow down, emergency, maintain speed at correct common speed, mpg "get" function
  ********************************************************************************************************/
 
-function car(/*parameters*/){
+    //LANE CONSTANTS
+    var ONE = 37.5;
+    var TWO = 112.5;
+    var THREE = 187.5;
+    var FOUR = 262.5;
+
+function car(speed,lane){
     //setup image
     this.setAngle(90);
     this.setImgAngle(0);
+    this.setSize(38,20);
     
     //accel/decel d values
     this.accel = .5;
@@ -19,7 +26,7 @@ function car(/*parameters*/){
     this.lane = lane;
     
     //speed for this car passed in as parameter
-    this.speed = speed;
+    this.setSpeed(speed);
     
     //destination lane passed in as parameter needed later maybe 
     this.destLane = destLane;

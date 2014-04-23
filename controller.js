@@ -89,7 +89,7 @@ function Controller() {
 		return OKAY;
 	} // end okayToStay
 	
-	this.addCar = function() {
+	this.addCar = function(car) {
 	// Adds a car to the car array.
 		this.cars.push(car);
 	} // end addCar

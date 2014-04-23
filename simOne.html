@@ -10,23 +10,22 @@
     <script type="text/javascript">
         var control;
         var spawn;
+	var sim;
 
-        //LANE CONSTANTS
-        var LANE_ONE = 37.5;
-        var LANE_TWO = 112.5;
-        var LANE_THREE = 187.5;
-        var LANE_FOUR = 262.5;
-        
-        //SIMULATION CONSTANT
-        SIM = 1;
+	//Sim constants
+	var SITUATION = 1;
+	var TRAINING = true;
         
         function init()
         {
+	    sim = new Scene();
+	    sim.setSize(1500,150);
+	    
             //Initialize spawner with the appropriate simulation constant
-            spawn = new spawner(SIM);
+            spawn = new Spawner(SITUATION);
             
             //Initialze controller
-            control = new controller();
+            control = new Controller(TRAINING);
         }
         
         function update()
