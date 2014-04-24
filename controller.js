@@ -3,16 +3,15 @@
 ** should be travelling at as well as when they should switch lanes.
 */
 
-function Controller(training) {
+function Controller(mode) {
 	this.cars = [];
 	this.mpgCounter = 0;
 	this.speedCounter = 0;
 	this.counter = 0;
 	this.totalMPG = 0;
 	this.totalSpeed = 0;
-	this.isTraining = training;
+	this.mode = mode;
 	this.avgSpeed = 0;
-	this.pickSpeed();
 	
 	this.update = function() {
 	// Runs through the cars seeing if any need to change lanes or speeds and checks if they are able to do such things.
@@ -22,14 +21,18 @@ function Controller(training) {
 			// First check if there's need for the car to activate an emergency stop.
 			var car = this.cars[i];
 			
+			// Add to the running total of each car's speed and mpg.
 			this.mpgCounter += car.mpg();
 			this.speedCounter += car.getSpeed();
 			
 			if (needToEmergencyStop(car.getLane())) {
 				car.eStop();
+			// Change the cars' speed only if the ideal speed is an actual speed.
 			} else if(this.avgSpeed > 0) {
+				// Slow the car down if it's going faster than the ideal speed.
 				if (car.getSpeed() > this.avgSpeed) {
 					car.decel();	
+				// Speed the car up if it's going slower than the ideal speed
 				} else if (car.getSpeed() < this.avgSpeed) {
 					car.accel();
 				}
@@ -77,14 +80,63 @@ function Controller(training) {
 		} // end for
 	this.counter++;
 	
+	// Add the average speed and mpg of all cars to the running total of the simulation's speed and mpg.
 	this.totalMPG += this.mpgCounter/this.cars.length;
 	this.totalSpeed += this.speedCounter/this.cars.length;
 	
 	} // end update
 	
 	this.pickSpeed = function() {
+	// Loads the training data from local storage and picks an ideal speed for the cars to go based on the mode and previous sessions.
+		var data = localStorage.trainingData;
+		var bestSpeed = 0;
+		var bestTime = 999999999;
+		var bestMPG = 0;
+		var timesTrained = 0;
 		
+		if (data != null) {
+			timesTrained = data.length;
+			// Look for the speed that gives the best time and mpg combination.
+			for (var i = 0; i < data.length; i ++) {
+				// For now, we'll just check for the best time.
+				if (data[i][0] < bestTime) {
+					bestTime = data[i][0];
+					bestSpeed = data[i][1];
+				} // end if
+			} // end for
+		} // end if
+		
+		if (this.mode == TRAINING) {
+			// Create a random value between -4 and 4 and then weight it depending on how many trials have already been ran.
+			var randomness = (8 * Math.random() - 4) * (1 / Math.log(timesTrained * timesTrained + 1));
+			if (randomness == Infinity) randomness = 0;
+			this.avgSpeed = bestSpeed + randomness;
+		} else if (this.mode == CONTROLLING) {
+			// Set the speed of the cars to the best speed.
+			this.avgSpeed = bestSpeed;
+		} else if (this.mode == MONITORING) {
+			// Set the speed to 0 so the controller knows not to update the cars.
+			this.avgSpeed = 0;
+		} // end if
 	}
+	
+	this.saveData = function() {
+	// Saves the results of the simulation into the training data in local storage. Also creates the training data array if it does not exist.
+		if (localStorage.trainingData != null) {
+			// Make the next entry to be stored in the trainingData array.
+			var data = [this.frames, this.totalSpeed / this.frames, this.totalMPG / this.frames];
+			localStorage.trainingData.push(data);
+		} else {
+			// Create the trainingData array if it does not exist already.
+			localStorage.trainingData = [];
+			
+		} // end if
+	} // end saveData
+	
+	this.clearData = function() {
+	// Deletes the training data.
+		delete localStorage.trainingData;
+	} // end if
 	
 	this.stats = function(car) {
 		
@@ -101,7 +153,7 @@ function Controller(training) {
 	// Returns one of four states: OKAY, SPEED_UP, SLOW_DOWN, or CANNOT_CHANGE.
 		return OKAY;
 	} // end okayToChangeLane
-	*/
+	
 	
 	this.okayToSpeedUp = function(car) {
 	// Checks to see if it is safe for a car to speed up by checking how close the car in front is (if any).
@@ -119,7 +171,7 @@ function Controller(training) {
 	// Checks to see if it is safe for a car to stay at the same speed by checking both the car in front and behind (if any).
 	// Returns one of three states: OKAY, SPEED_UP, or SLOW_DOWN.
 		return OKAY;
-	} // end okayToStay
+	} // end okayToStay*/
 	
 	this.addCar = function(car) {
 	// Adds a car to the car array.
@@ -143,6 +195,8 @@ function Controller(training) {
 		} // end if
 	} // end removeCarAt
 	
+	this.pickSpeed();
+	return this;
 } // end Controller constructor
 
 // Constants to determine states.
