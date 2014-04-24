@@ -109,7 +109,7 @@ function Controller(mode) {
 		if (this.mode == TRAINING) {
 			// Create a random value between -4 and 4 and then weight it depending on how many trials have already been ran.
 			var randomness = (8 * Math.random() - 4) * (1 / Math.log(timesTrained * timesTrained + 1));
-			if (randomness == Infinity) randomness = 0;
+			if (randomness == Infinity || randomness == -Infinity) randomness = 0;
 			this.avgSpeed = bestSpeed + randomness;
 		} else if (this.mode == CONTROLLING) {
 			// Set the speed of the cars to the best speed.
