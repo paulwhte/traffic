@@ -5,7 +5,9 @@
     <script type="text/javascript"
             src = "simpleGame.js"></script>
 	<script type="text/javascript" src = "controller.js"></script>
+	<script type="text/javascript" src = "spawner.js"></script>
         <script type="text/javascript" src = "car.js"></script>
+	
     
     <script type="text/javascript">
         var control;
@@ -14,7 +16,9 @@
 
 	//Sim constants
 	var SITUATION = 1;
-	var TRAINING = true;
+	var TRAINING = 0;
+	var CONTROLLING = 1;
+	var MONITORING = 2;
         
         function init()
         {
@@ -26,11 +30,12 @@
             
             //Initialze controller
             control = new Controller(TRAINING);
-        }
+			console.log(control.avgSpeed);
+		}
         
         function update()
         {
-            
+           control.update(); 
         }
     </script>
 
