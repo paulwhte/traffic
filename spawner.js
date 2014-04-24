@@ -1,9 +1,10 @@
-function Spawner(situation)
+function Spawner(situation, controller)
 {
     tSpawner = new Sprite(sim, 'road.png', 1500, 150, 0);
     tSpawner.curTime = 0;
-    tSpawner.sim1 = [[]];
+    tSpawner.sim1 = [[0, 15, ONE]];
     tSpawner.situation = situation;
+	tSpawner.controller = controller;
     
     tSpawner.update = function () {
         tSpawner.spawn();
@@ -16,6 +17,10 @@ function Spawner(situation)
             this.draw();
         } // end if
     }
+	
+	tSpawner.reset = function() {
+		this.curTime = 0;
+	} // end reset
     
     tSpawner.spawn = function () {
         var time = this.curTime / 20;
@@ -27,7 +32,7 @@ function Spawner(situation)
         for (var i = 0; i < sim.length; i ++) {
             if (sim[i][0] == time) {
                 var car = new Car(sim[i][1], sim[i][2]);
-                controller.addCar(car);
+                this.controller.addCar(car);
             }
         }
         

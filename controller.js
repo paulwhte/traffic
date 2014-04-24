@@ -12,11 +12,13 @@ function Controller(mode) {
 	this.totalSpeed = 0;
 	this.mode = mode;
 	this.avgSpeed = 0;
+	this.simulationFinished = false;
 	
 	this.update = function() {
 	// Runs through the cars seeing if any need to change lanes or speeds and checks if they are able to do such things.
 		this.mpgCounter = 0;
 		this.speedCounter = 0;
+		//console.log(this.cars.length);
 		for (var i = 0; i < this.cars.length; i ++) {
 			// First check if there's need for the car to activate an emergency stop.
 			var car = this.cars[i];
@@ -25,7 +27,7 @@ function Controller(mode) {
 			this.mpgCounter += car.mpg();
 			this.speedCounter += car.getSpeed();
 			
-			if (needToEmergencyStop(car.getLane())) {
+			if (this.needToEmergencyStop(car.getLane())) {
 				car.eStop();
 			// Change the cars' speed only if the ideal speed is an actual speed.
 			} else if(this.avgSpeed > 0) {
@@ -77,40 +79,55 @@ function Controller(mode) {
 					else if (state == SLOW_DOWN) car.decel();
 				} // end if*/
 			} // end if
+			if (car.visible == false) {
+				this.removeCarAt(i);
+				i --;
+			} // end if
 		} // end for
-	this.counter++;
 	
-	// Add the average speed and mpg of all cars to the running total of the simulation's speed and mpg.
-	this.totalMPG += this.mpgCounter/this.cars.length;
-	this.totalSpeed += this.speedCounter/this.cars.length;
 	
+	if (this.cars.length == 0) {
+		this.saveData();
+		this.simulationFinished = true;
+	} else {
+		this.counter++;
+		
+		// Add the average speed and mpg of all cars to the running total of the simulation's speed and mpg.
+		this.totalMPG += this.mpgCounter/this.cars.length;
+		this.totalSpeed += this.speedCounter/this.cars.length;
+	} // end if
 	} // end update
 	
 	this.pickSpeed = function() {
 	// Loads the training data from local storage and picks an ideal speed for the cars to go based on the mode and previous sessions.
-		var data = localStorage.trainingData;
-		var bestSpeed = 0;
-		var bestTime = 999999999;
-		var bestMPG = 0;
-		var timesTrained = 0;
-		
-		if (data != null) {
-			timesTrained = data.length;
-			// Look for the speed that gives the best time and mpg combination.
-			for (var i = 0; i < data.length; i ++) {
-				// For now, we'll just check for the best time.
-				if (data[i][0] < bestTime) {
-					bestTime = data[i][0];
-					bestSpeed = data[i][1];
-				} // end if
+		var data = [];
+		if(localStorage.trainingData != null) {
+			var firstSplit = localStorage.trainingData.split(';');
+			for (var i = 0; i < firstSplit.length; i ++) {
+				data.push(firstSplit[i].split(','));
 			} // end for
 		} // end if
 		
+		var bestSpeed = 0;
+		var bestTime = 999999999;
+		var bestMPG = 0;
+		var timesTrained = data.length;
+
+		// Look for the speed that gives the best time and mpg combination.
+		for (var i = 0; i < data.length; i ++) {
+			// For now, we'll just check for the best time.
+			//console.log(data[i]);
+			if (parseFloat(data[i][0]) < bestTime) {
+				bestTime = parseFloat(data[i][0]);
+				bestSpeed = parseFloat(data[i][1]);
+			} // end if
+		} // end for
 		if (this.mode == TRAINING) {
 			// Create a random value between -4 and 4 and then weight it depending on how many trials have already been ran.
-			var randomness = (8 * Math.random() - 4) * (1 / Math.log(timesTrained * timesTrained + 1));
+			var randomness = (12 * Math.random() - 6) * (1 / Math.log(timesTrained + 1));
 			if (randomness == Infinity || randomness == -Infinity) randomness = 0;
 			this.avgSpeed = bestSpeed + randomness;
+			//this.avgSpeed = bestSpeed;
 		} else if (this.mode == CONTROLLING) {
 			// Set the speed of the cars to the best speed.
 			this.avgSpeed = bestSpeed;
@@ -118,18 +135,23 @@ function Controller(mode) {
 			// Set the speed to 0 so the controller knows not to update the cars.
 			this.avgSpeed = 0;
 		} // end if
+		
+		console.log('Best: ' + bestSpeed + ',' + 'Chosen: ' + this.avgSpeed);
 	}
 	
 	this.saveData = function() {
 	// Saves the results of the simulation into the training data in local storage. Also creates the training data array if it does not exist.
+		var speed = this.totalSpeed / this.counter;
+		var mpg = this.totalMPG / this.counter;
+		var data = this.counter + ',' + speed.toFixed(3) + ',' + mpg.toFixed(3) + ';';
+		console.log('New entry: ' + data);
+		//console.log(data);
 		if (localStorage.trainingData != null) {
 			// Make the next entry to be stored in the trainingData array.
-			var data = [this.frames, this.totalSpeed / this.frames, this.totalMPG / this.frames];
-			localStorage.trainingData.push(data);
+			localStorage.trainingData += data;
 		} else {
 			// Create the trainingData array if it does not exist already.
-			localStorage.trainingData = [];
-			
+			localStorage.trainingData = data;
 		} // end if
 	} // end saveData
 	
@@ -137,6 +159,17 @@ function Controller(mode) {
 	// Deletes the training data.
 		delete localStorage.trainingData;
 	} // end if
+	
+	this.resetSimulation = function() {
+		this.mpgCounter = 0;
+		this.speedCounter = 0;
+		this.counter = 0;
+		this.totalMPG = 0;
+		this.totalSpeed = 0;
+		this.avgSpeed = 0;
+		this.simulationFinished = false;
+		this.pickSpeed();
+	} // end resetCurrentData
 	
 	this.stats = function(car) {
 		

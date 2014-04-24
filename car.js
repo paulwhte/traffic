@@ -12,57 +12,60 @@
     var THREE = 187.5;
     var FOUR = 262.5;
 
-function car(speed,lane){
+function Car(speed,lane){
     //setup image
-    this.setAngle(90);
-    this.setImgAngle(0);
-    this.setSize(38,20);
+	tcar = new Sprite(sim, 'car.jpg', 38, 20, 1);
+    tcar.setAngle(90);
+    tcar.setImgAngle(0);
+	tcar.boundAction = DIE;
+    //tcar.setSize(38,20);
     
     //accel/decel d values
-    this.accel = .5;
-    this.decel = -.75;
+    tcar.accelRate = .5;
+    tcar.decelRate = -.75;
     
     //start lane for this car passed in as parameter
-    this.lane = lane;
+    tcar.lane = lane;
+	tcar.setPosition(0, lane);
     
     //speed for this car passed in as parameter
-    this.setSpeed(speed);
+    tcar.setSpeed(speed);
     
     //destination lane passed in as parameter needed later maybe 
-    this.destLane = destLane;
+    //tcar.destLane = destLane;
     
     //needed later maybe
-    this.carId = 0;
+    tcar.carId = 0;
     
     //return the car's current lane
-    this.getLane = function()
+    tcar.getLane = function()
     {
         return this.lane;
     }
     
     //change the car's current lane by an increment
-    this.changeLaneBy = function(dLane)
+    tcar.changeLaneBy = function(dLane)
     {
         this.lane += dLane;
     }
     
     //accelerate
-    this.accel = function()
+    tcar.accel = function()
     {
-        this.changeSpeedBy(this.accel);
+        this.changeSpeedBy(this.accelRate);
     }
     
     //decelerate
-    this.decel = function()
+    tcar.decel = function()
     {
         if(this.speed > 0)
         {
-            this.changeSpeedBy(this.decel);
+            this.changeSpeedBy(this.decelRate);
         }
     }
     
     //emergency stop
-    this.eStop = function()
+    tcar.eStop = function()
     {
         if(this.speed > 0)
         {
@@ -74,7 +77,7 @@ function car(speed,lane){
     
     //returns the mpg of this frame based only on the current speed
     //it is a simplistic way to calculate, but for our purposes ok
-    this.mpg = function()
+    tcar.mpg = function()
     {
         //use the multiplier we calculated to convert the pixels/frame speed to miles/hour
         var x = this.speed * 6.639; 
@@ -84,4 +87,5 @@ function car(speed,lane){
         
         return mpg;
     }
+	return tcar;
 }

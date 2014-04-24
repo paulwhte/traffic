@@ -19,23 +19,38 @@
 	var TRAINING = 0;
 	var CONTROLLING = 1;
 	var MONITORING = 2;
+	var runTimes = 100;
+	var curRun = 0;
         
         function init()
         {
 	    sim = new Scene();
 	    sim.setSize(1500,150);
-	    
-            //Initialize spawner with the appropriate simulation constant
-            spawn = new Spawner(SITUATION);
-            
-            //Initialze controller
+			
+			//Initialze controller
             control = new Controller(TRAINING);
-			console.log(control.avgSpeed);
+			control.clearData();
+			control.resetSimulation();
+			
+            //Initialize spawner with the appropriate simulation constant
+            spawn = new Spawner(SITUATION, control);
+			spawn.setPosition(750, 75);
+			
+			sim.start();
 		}
         
         function update()
         {
-           control.update(); 
+		   if (curRun < runTimes) {
+			   spriteList.update();
+			   control.update();
+			   
+			   if(control.simulationFinished) {
+					control.resetSimulation();
+					spawn.reset();
+					curRun ++;
+			   } // end if
+		   } // end if
         }
     </script>
 
