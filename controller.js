@@ -31,6 +31,9 @@ function Controller(mode) {
 				car.eStop();
 			// Change the cars' speed only if the ideal speed is an actual speed.
 			} else if(this.avgSpeed > 0) {
+				//check to see if a car is close in front of this car, and slow it down if necessary
+				car.checkFront();
+				
 				// Slow the car down if it's going faster than the ideal speed.
 				if (car.getSpeed() > this.avgSpeed) {
 					car.decel();	
@@ -85,17 +88,18 @@ function Controller(mode) {
 			} // end if
 		} // end for
 	
-	
-	if (this.cars.length == 0) {
-		this.saveData();
-		this.simulationFinished = true;
-	} else {
-		this.counter++;
-		
-		// Add the average speed and mpg of all cars to the running total of the simulation's speed and mpg.
-		this.totalMPG += this.mpgCounter/this.cars.length;
-		this.totalSpeed += this.speedCounter/this.cars.length;
-	} // end if
+		//if simulation is over (no more cars)
+		if (this.cars.length == 0) {
+			this.saveData();
+			this.simulationFinished = true;
+		} else {
+			//simulation is not over
+			this.counter++;
+			
+			// Add the average speed and mpg of all cars to the running total of the simulation's speed and mpg.
+			this.totalMPG += this.mpgCounter/this.cars.length;
+			this.totalSpeed += this.speedCounter/this.cars.length;
+		} // end if
 	} // end update
 	
 	this.pickSpeed = function() {
@@ -136,7 +140,7 @@ function Controller(mode) {
 			this.avgSpeed = 0;
 		} // end if
 		
-		console.log('Best: ' + bestSpeed + ',' + 'Chosen: ' + this.avgSpeed);
+		console.log('Best: ' + bestSpeed + ',' + 'Chosen: ' + this.avgSpeed.toFixed(3));
 	}
 	
 	this.saveData = function() {
