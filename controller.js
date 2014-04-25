@@ -31,16 +31,13 @@ function Controller(mode) {
 				car.eStop();
 			// Change the cars' speed only if the ideal speed is an actual speed.
 			} else if(this.avgSpeed > 0) {
-				//check to see if a car is close in front of this car, and slow it down if necessary
-				car.checkFront();
-				
 				// Slow the car down if it's going faster than the ideal speed.
 				if (car.getSpeed() > this.avgSpeed) {
 					car.decel();	
 				// Speed the car up if it's going slower than the ideal speed
 				} else if (car.getSpeed() < this.avgSpeed) {
 					car.accel();
-				}
+				} // end if
 				/*
 				// Second, check if a car needs to switch lanes.
 				if (car.getLane() != car.destLane) {
@@ -82,6 +79,10 @@ function Controller(mode) {
 					else if (state == SLOW_DOWN) car.decel();
 				} // end if*/
 			} // end if
+			
+			//check to see if a car is close in front of this car, and slow it down if necessary
+			car.checkFront();
+			
 			if (car.visible == false) {
 				this.removeCarAt(i);
 				i --;
