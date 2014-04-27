@@ -68,6 +68,10 @@ function Car(id,speed,lane){
         if(this.speed > 0)
         {
             this.changeSpeedBy(this.decelRate);
+			// Make sure the car doesn't go backwards.
+			if (this.speed < 0) {
+				this.setSpeed(0);
+			} // end if
 	    //control.decelTime++;
         }
     }
@@ -79,8 +83,12 @@ function Car(id,speed,lane){
         {
             //stop car faster than normal
             //the modifier might need adjustment
-            tcar.changeSpeedBy(tcar.decel - .25);
-	    control.decelTime++;
+            this.changeSpeedBy(this.decelRate - 3);
+			// Make sure the car doesn't go backwards
+			if (this.speed < 0) {
+				this.setSpeed(0);
+			} // end if
+	    //control.decelTime++;
         }
     }
     
@@ -89,6 +97,7 @@ function Car(id,speed,lane){
 	//check if any cars in this car's lane are too close
 	//loop through car list
 	var carInFront = false;
+	var needToEStop = false;
 	var followDist = 0;
 	for(var i = 0; i < control.cars.length; i++)
 	{
@@ -98,11 +107,13 @@ function Car(id,speed,lane){
 			//if this car is behind the other car
 			// and the dif between x values is too little
 			//followDist = control.cars[i].x - this.x;
-			if(this.x < control.cars[i].x && (control.cars[i].x - this.x) < 85 && this.getSpeed() > control.cars[i].getSpeed())
+			//if(this.x < control.cars[i].x && (control.cars[i].x - this.x) < 85 && this.getSpeed() > control.cars[i].getSpeed())
+			if(this.x < control.cars[i].x && (control.cars[i].x - this.x) < 85)
 			{
 				//slow down
 				//console.log("slowing");
 				//this.decel();
+				if (control.cars[i].x - this.x < 45) needToEStop = true; // Emergency stop because the car is way too close.
 				carInFront = true;
 			//} else this.accel();
 			}
@@ -111,10 +122,11 @@ function Car(id,speed,lane){
 	
 	// If there was a car that was deemed too close, slow down.
 	if (carInFront) {
-		this.decel();
+		if (needToEStop) this.eStop();
+		else this.decel();
 	// Otherwise, we can speed up.
 	} else {
-		//this.accel();
+		this.accel();
 	} // end if
     }
     

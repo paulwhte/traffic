@@ -6,15 +6,15 @@ function Spawner(situation, controller)
     tSpawner.sim2 = [
 			[1, 0, 11, ONE],
 			[2, 2, 3, TWO], [3, 4, 6, TWO], [4, 5, 8, TWO], [5, 6, 6, TWO], [6, 8, 5, TWO], [7, 9, 7, TWO],
-			[8, 1, 4, THREE], [9, 2, 4, THREE], [10, 3, 4, THREE], [11, 4, 4, THREE],[12, 5, 4, THREE], [13, 6, 4, THREE], [7, 4, THREE], [8, 4, THREE], [9, 4, THREE], [10, 4, THREE],
+			[8, 1, 4, THREE], [9, 2, 4, THREE], [10, 3, 4, THREE], [11, 4, 4, THREE],[12, 5, 4, THREE], [13, 6, 4, THREE], //[20, 4, THREE], [21, 4, THREE], [22, 4, THREE], [23, 4, THREE],
 			[14, 0, 2, FOUR], [15, 10, 5, FOUR], [16, 12, 7, FOUR], [17, 13, 6, FOUR], [18, 15, 6.5, FOUR], [19, 16, 5, FOUR]
 		     ];
     tSpawner.situation = situation;
 	tSpawner.controller = controller;
     
     tSpawner.update = function () {
-        tSpawner.spawn();
-        tSpawner.curTime ++;
+        this.spawn();
+        this.curTime ++;
         
         this.x += this.dx;
         this.y += this.dy;

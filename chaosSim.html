@@ -46,8 +46,22 @@
             var time = runTime/20;
             document.getElementById('time').innerHTML = "Time: " + time.toFixed(1);
             
-            //make first car in third lane slow (carId == 8)
-            /*if(time > 9 && time < 11)
+            
+            
+            if (curRun < runTimes) {
+                    spriteList.update();
+                    control.update();
+                    
+                    if(control.simulationFinished) {
+                                 control.resetSimulation();
+                                 spawn.reset();
+                                 curRun ++;
+                                 runTime = 0;
+                    } // end if
+            } // end if
+			
+			//make first car in third lane slow (carId == 8)
+            if(time > 9 && time < 11)
             {
                 for(var i = 0; i < control.cars.length; i++)
                 {
@@ -65,19 +79,7 @@
                         control.cars[i].accel();
                     }
                 }
-            }*/
-            
-            if (curRun < runTimes) {
-                    spriteList.update();
-                    control.update();
-                    
-                    if(control.simulationFinished) {
-                                 control.resetSimulation();
-                                 spawn.reset();
-                                 curRun ++;
-                                 runTime = 0;
-                    } // end if
-            } // end if
+            }
             runTime++;
         }
     </script>
