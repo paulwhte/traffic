@@ -37,6 +37,11 @@ function Car(speed,lane){
     
     //needed later maybe
     tcar.carId = 0;
+	
+	//speed of the previous frame.
+	tcar.prevSpeed = speed;
+	tcar.accelTime = 0;
+	tcar.decelTime = 0;
     
     //return the car's current lane
     tcar.getLane = function()
@@ -98,7 +103,7 @@ function Car(speed,lane){
 				//slow down
 				//console.log("slowing");
 				this.decel();
-			} else this.accel();
+			}
 		}
 	}
     }
@@ -115,5 +120,31 @@ function Car(speed,lane){
         
         return mpg;
     }
+	
+	// Keeps track of the number of frames the car has either accelerated or decelerated.
+	tcar.incrementTimeAccelerated = function() {
+		// If the car is going faster than the last frame, it accelerated.
+		if (this.speed > this.prevSpeed) {
+			this.accelTime ++;
+		// If the car is going slower than the last frame, it decelerated.
+		} else if (this.speed < this.prevSpeed) {
+			this.decelTime ++;
+		} // end if
+		
+		// The current speed now becomes the previous speed.
+		this.prevSpeed = this.speed;
+	} // end incrementTimeAccelerated
+	
+	tcar.update = function() {
+		this.x += this.dx;
+        this.y += this.dy;
+        this.checkBounds();
+        if (this.visible) {
+            this.draw();
+        } // end if
+		this.incrementTimeAccelerated();
+		console.log('accel time: ' + this.accelTime + '. decel time: ' + this.decelTime);
+	} // end update
+	
 	return tcar;
 }
