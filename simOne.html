@@ -42,16 +42,19 @@
         
         function update()
         {
-		   if (curRun < runTimes) {
-			   spriteList.update();
-			   control.update();
-			   
-			   if(control.simulationFinished) {
-					control.resetSimulation();
-					spawn.reset();
-					curRun ++;
-			   } // end if
-		   } // end if
+            var time = runTime/20;
+            document.getElementById('time').innerHTML = "Time: " + time.toFixed(1);
+		   
+	    if (curRun < runTimes) {
+		    spriteList.update();
+		    control.update();
+		    
+		    if(control.simulationFinished) {
+				 control.resetSimulation();
+				 spawn.reset();
+				 curRun ++;
+		    } // end if
+	    } // end if
         }
     </script>
 

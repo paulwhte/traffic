@@ -12,13 +12,12 @@
     var THREE = 93.75;
     var FOUR = 131.25;
 
-function Car(speed,lane){
+function Car(id,speed,lane){
     //setup image
-	tcar = new Sprite(sim, 'car.jpg', 38, 20, 1);
+    tcar = new Sprite(sim, 'car.jpg', 38, 20, 1);
     tcar.setAngle(90);
     tcar.setImgAngle(0);
-	tcar.boundAction = DIE;
-    //tcar.setSize(38,20);
+    tcar.boundAction = DIE;
     
     //accel/decel d values
     tcar.accelRate = .25;
@@ -36,7 +35,7 @@ function Car(speed,lane){
     //tcar.destLane = destLane;
     
     //needed later maybe
-    tcar.carId = 0;
+    tcar.carId = id;
 	
 	//speed of the previous frame.
 	tcar.prevSpeed = speed;
@@ -80,7 +79,7 @@ function Car(speed,lane){
         {
             //stop car faster than normal
             //the modifier might need adjustment
-            car.changeSpeedBy(car.decel - .25);
+            tcar.changeSpeedBy(tcar.decel - .25);
 	    control.decelTime++;
         }
     }
@@ -90,6 +89,7 @@ function Car(speed,lane){
 	//check if any cars in this car's lane are too close
 	//loop through car list
 	var carInFront = false;
+	var followDist = 0;
 	for(var i = 0; i < control.cars.length; i++)
 	{
 		//cars are in the same lane
@@ -97,7 +97,8 @@ function Car(speed,lane){
 		{
 			//if this car is behind the other car
 			// and the dif between x values is too little
-			if(this.x < control.cars[i].x && (control.cars[i].x -this.x) < 85 && this.getSpeed() > control.cars[i].getSpeed())
+			//followDist = control.cars[i].x - this.x;
+			if(this.x < control.cars[i].x && (control.cars[i].x - this.x) < 85 && this.getSpeed() > control.cars[i].getSpeed())
 			{
 				//slow down
 				//console.log("slowing");
