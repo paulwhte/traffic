@@ -1,7 +1,7 @@
 <html lang="en-US">
 <head>
     <meta charset="UTF-8">
-    <title>Traffic Simulation 1</title>
+    <title>Regular Traffic Simulation</title>
     <script type="text/javascript"
             src = "simpleGame.js"></script>
 	<script type="text/javascript" src = "controller.js"></script>
@@ -15,11 +15,11 @@
 	var sim;
 
 	//Sim constants
-	var SITUATION = 1;
-	var TRAINING = 0;
-	var CONTROLLING = 1;
-	var NATURAL = 2;
-	var MONITORING = 2;
+	var SITUATION = 2; //second simulation file. NO TRAFFIC CONTROL
+	var TRAINING = 0; //if training mode
+	var CONTROLLING = 1; //not sure
+	var CHAOS = 2; //this mode has no controlling, controller only records STATS
+	var MONITORING = 2; //not sure
 	var runTimes = 100;
 	var curRun = 0;
         
@@ -29,7 +29,7 @@
 	    sim.setSize(1500,150);
 			
 			//Initialze controller
-            control = new Controller(TRAINING);
+            control = new Controller(CHAOS);
 			control.clearData();
 			control.resetSimulation();
 			
@@ -43,7 +43,7 @@
         function update()
         {
 		   if (curRun < runTimes) {
-			   spriteList.update();
+                           spriteList.update();
 			   control.update();
 			   
 			   if(control.simulationFinished) {

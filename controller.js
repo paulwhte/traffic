@@ -13,6 +13,8 @@ function Controller(mode) {
 	this.mode = mode;
 	this.avgSpeed = 0;
 	this.simulationFinished = false;
+	this.accelTime = 0;
+	this.decelTime = 0;
 	
 	this.update = function() {
 	// Runs through the cars seeing if any need to change lanes or speeds and checks if they are able to do such things.
@@ -30,7 +32,7 @@ function Controller(mode) {
 			if (this.needToEmergencyStop(car.getLane())) {
 				car.eStop();
 			// Change the cars' speed only if the ideal speed is an actual speed.
-			} else if(this.avgSpeed > 0) {
+			} else if(this.avgSpeed > 0 && mode != 2) {
 				// Slow the car down if it's going faster than the ideal speed.
 				if (car.getSpeed() > this.avgSpeed) {
 					car.decel();	
@@ -83,6 +85,7 @@ function Controller(mode) {
 			//check to see if a car is close in front of this car, and slow it down if necessary
 			car.checkFront();
 			
+			//remove car from list when it reaches the end of the road
 			if (car.visible == false) {
 				this.removeCarAt(i);
 				i --;
@@ -141,7 +144,11 @@ function Controller(mode) {
 			this.avgSpeed = 0;
 		} // end if
 		
-		console.log('Best: ' + bestSpeed + ',' + 'Chosen: ' + this.avgSpeed.toFixed(3));
+		//in chaos mode, speeds are not chosen
+		if(mode != 2)
+		{
+			console.log('Best speed: ' + bestSpeed + ',' + 'Chosen (average speed): ' + this.avgSpeed.toFixed(3));
+		}
 	}
 	
 	this.saveData = function() {
@@ -149,8 +156,15 @@ function Controller(mode) {
 		var speed = this.totalSpeed / this.counter;
 		var mpg = this.totalMPG / this.counter;
 		var data = this.counter + ',' + speed.toFixed(3) + ',' + mpg.toFixed(3) + ';';
+		
+		//Stats displayed to show results are being made
+		console.log("Fuel Efficiency: " + mpg.toFixed(3));
+		console.log("Average speed: " + speed);
+		console.log("Time spent accel: " + this.accelTime);
+		console.log("Time spent decel: " + this.decelTime);
 		console.log('New entry: ' + data);
 		//console.log(data);
+		
 		if (localStorage.trainingData != null) {
 			// Make the next entry to be stored in the trainingData array.
 			localStorage.trainingData += data;
@@ -172,6 +186,8 @@ function Controller(mode) {
 		this.totalMPG = 0;
 		this.totalSpeed = 0;
 		this.avgSpeed = 0;
+		this.accelTime = 0;
+		this.decelTime = 0;
 		this.simulationFinished = false;
 		this.pickSpeed();
 	} // end resetCurrentData

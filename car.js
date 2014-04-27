@@ -7,10 +7,10 @@
  ********************************************************************************************************/
 
     //LANE CONSTANTS
-    var ONE = 37.5;
-    var TWO = 112.5;
-    var THREE = 187.5;
-    var FOUR = 262.5;
+    var ONE = 18.75;
+    var TWO = 56.25;
+    var THREE = 93.75;
+    var FOUR = 131.25;
 
 function Car(speed,lane){
     //setup image
@@ -21,8 +21,8 @@ function Car(speed,lane){
     //tcar.setSize(38,20);
     
     //accel/decel d values
-    tcar.accelRate = .5;
-    tcar.decelRate = -.75;
+    tcar.accelRate = .25;
+    tcar.decelRate = -.35;
     
     //start lane for this car passed in as parameter
     tcar.lane = lane;
@@ -30,6 +30,7 @@ function Car(speed,lane){
     
     //speed for this car passed in as parameter
     tcar.setSpeed(speed);
+    tcar.topSpeed = speed;
     
     //destination lane passed in as parameter needed later maybe 
     //tcar.destLane = destLane;
@@ -52,7 +53,11 @@ function Car(speed,lane){
     //accelerate
     tcar.accel = function()
     {
-        this.changeSpeedBy(this.accelRate);
+	if(this.speed < this.topSpeed)
+	{
+		this.changeSpeedBy(this.accelRate);
+		control.accelTime++;
+	}
     }
     
     //decelerate
@@ -61,6 +66,7 @@ function Car(speed,lane){
         if(this.speed > 0)
         {
             this.changeSpeedBy(this.decelRate);
+	    control.decelTime++;
         }
     }
     
@@ -72,7 +78,29 @@ function Car(speed,lane){
             //stop car faster than normal
             //the modifier might need adjustment
             car.changeSpeedBy(car.decel - .25);
+	    control.decelTime++;
         }
+    }
+    
+    tcar.checkFront = function()
+    {
+	//check if any cars in this car's lane are too close
+	//loop through car list
+	for(var i = 0; i < control.cars.length; i++)
+	{
+		//cars are in the same lane
+		if(this.lane == control.cars[i].lane)
+		{
+			//if this car is behind the other car
+			// and the dif between x values is too little
+			if(this.x < control.cars[i].x && (control.cars[i].x -this.x) < 85 && this.getSpeed() > control.cars[i].getSpeed())
+			{
+				//slow down
+				//console.log("slowing");
+				this.decel();
+			} else this.accel();
+		}
+	}
     }
     
     //returns the mpg of this frame based only on the current speed
