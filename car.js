@@ -40,8 +40,6 @@ function Car(speed,lane){
 	
 	//speed of the previous frame.
 	tcar.prevSpeed = speed;
-	tcar.accelTime = 0;
-	tcar.decelTime = 0;
     
     //return the car's current lane
     tcar.getLane = function()
@@ -61,7 +59,7 @@ function Car(speed,lane){
 	if(this.speed < this.topSpeed)
 	{
 		this.changeSpeedBy(this.accelRate);
-		control.accelTime++;
+		//control.accelTime++;
 	}
     }
     
@@ -71,7 +69,7 @@ function Car(speed,lane){
         if(this.speed > 0)
         {
             this.changeSpeedBy(this.decelRate);
-	    control.decelTime++;
+	    //control.decelTime++;
         }
     }
     
@@ -91,6 +89,7 @@ function Car(speed,lane){
     {
 	//check if any cars in this car's lane are too close
 	//loop through car list
+	var carInFront = false;
 	for(var i = 0; i < control.cars.length; i++)
 	{
 		//cars are in the same lane
@@ -102,10 +101,20 @@ function Car(speed,lane){
 			{
 				//slow down
 				//console.log("slowing");
-				this.decel();
+				//this.decel();
+				carInFront = true;
+			//} else this.accel();
 			}
 		}
 	}
+	
+	// If there was a car that was deemed too close, slow down.
+	if (carInFront) {
+		this.decel();
+	// Otherwise, we can speed up.
+	} else {
+		//this.accel();
+	} // end if
     }
     
     //returns the mpg of this frame based only on the current speed
@@ -125,10 +134,10 @@ function Car(speed,lane){
 	tcar.incrementTimeAccelerated = function() {
 		// If the car is going faster than the last frame, it accelerated.
 		if (this.speed > this.prevSpeed) {
-			this.accelTime ++;
+			control.accelTime ++;
 		// If the car is going slower than the last frame, it decelerated.
 		} else if (this.speed < this.prevSpeed) {
-			this.decelTime ++;
+			control.decelTime ++;
 		} // end if
 		
 		// The current speed now becomes the previous speed.
@@ -143,7 +152,6 @@ function Car(speed,lane){
             this.draw();
         } // end if
 		this.incrementTimeAccelerated();
-		console.log('accel time: ' + this.accelTime + '. decel time: ' + this.decelTime);
 	} // end update
 	
 	return tcar;
