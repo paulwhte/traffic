@@ -17,9 +17,9 @@
 	//Sim constants
 	var SITUATION = 2; //second simulation file. NO TRAFFIC CONTROL
 	var TRAINING = 0; //if training mode
-	var CONTROLLING = 1; //not sure
+	var CONTROLLING = 1; //controller chooses the best speed from previous data without experimentation.
 	var CHAOS = 2; //this mode has no controlling, controller only records STATS
-	var MONITORING = 2; //not sure
+	var MONITORING = 2; //same as chaos
 	var runTimes = 100;
 	var curRun = 0;
         var runTime = 0;
@@ -30,7 +30,7 @@
 	    sim.setSize(1500,150);
 			
 			//Initialze controller
-            control = new Controller(CHAOS);
+            control = new Controller(TRAINING);
 			control.clearData();
 			control.resetSimulation();
 			

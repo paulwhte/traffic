@@ -33,13 +33,45 @@ function Controller(mode) {
 				car.eStop();
 			// Change the cars' speed only if the ideal speed is an actual speed.
 			} else if(this.avgSpeed > 0 && mode != 2) {
-				// Slow the car down if it's going faster than the ideal speed.
-				if (car.getSpeed() > this.avgSpeed) {
-					car.decel();	
-				// Speed the car up if it's going slower than the ideal speed
-				} else if (car.getSpeed() < this.avgSpeed) {
-					car.accel();
+				var carInFront = false;
+				var needToEStop = false;
+				var followDist = 0;
+				for(var j = 0; j < this.cars.length; j++)
+				{
+					//cars are in the same lane
+					if(car.lane == this.cars[j].lane)
+					{
+						//if this car is behind the other car
+						// and the dif between x values is too little
+						//followDist = control.cars[i].x - this.x;
+						//if(this.x < control.cars[i].x && (control.cars[i].x - this.x) < 85 && this.getSpeed() > control.cars[i].getSpeed())
+						if(car.x < this.cars[j].x && (this.cars[j].x - car.x) < 85)
+						{
+							//slow down
+							//console.log("slowing");
+							//this.decel();
+							if (this.cars[j].x - car.x < 45) needToEStop = true; // Emergency stop because the car is way too close.
+							carInFront = true;
+						//} else this.accel();
+						}
+					}
+				}
+				
+				// If there was a car that was deemed too close, slow down.
+				if (carInFront) {
+					if (needToEStop) car.eStop();
+					else car.decel();
+				// Otherwise, we can speed up.
+				} else {
+					// Slow the car down if it's going faster than the ideal speed.
+					if (car.getSpeed() > this.avgSpeed) {
+						car.decel();	
+					// Speed the car up if it's going slower than the ideal speed
+					} else if (car.getSpeed() < this.avgSpeed) {
+						car.accel();
+					} // end if
 				} // end if
+				
 				/*
 				// Second, check if a car needs to switch lanes.
 				if (car.getLane() != car.destLane) {
@@ -80,10 +112,12 @@ function Controller(mode) {
 					else if (state == SPEED_UP) car.accel();
 					else if (state == SLOW_DOWN) car.decel();
 				} // end if*/
+			} else {
+				car.checkFront();
 			} // end if
 			
 			//check to see if a car is close in front of this car, and slow it down if necessary
-			car.checkFront();
+			//car.checkFront();
 			
 			//remove car from list when it reaches the end of the road
 			if (car.visible == false) {
@@ -230,6 +264,13 @@ function Controller(mode) {
 	this.addCar = function(car) {
 	// Adds a car to the car array.
 		this.cars.push(car);
+		// Change the top speed of the new car to the speed all cars should be going.
+		if (this.mode == TRAINING || this.mode == CONTROLLING) {
+			// But only if the average speed is real!
+			if (this.avgSpeed > 0) {
+				car.topSpeed = this.avgSpeed;
+			} // end if
+		} // end if
 	} // end addCar
 	
 	this.removeCar = function(car) {
